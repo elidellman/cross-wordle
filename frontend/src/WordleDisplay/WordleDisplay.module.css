@@ -1,0 +1,35 @@
+.card{
+    display: flex;
+    flex-direction: column;
+    row-gap: 2vh;
+
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1vw;
+
+}
+
+
+.tile{
+
+    border: 2px solid black;
+    width: 10vh;
+    aspect-ratio: 1 / 1;
+
+
+}
+
+
+.grey{
+    background-color: grey;
+}
+.yellow{
+    background-color: yellow;
+}
+.green{
+    background-color: green;
+}
