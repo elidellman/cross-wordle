@@ -8,6 +8,9 @@ import * as React from "react";
 function App() {
 
     const [message, setMessage] = useState({});
+    const [textArray, setTextArray] = useState<string[][]>([[]]);
+    const [colorsArray, setColorsArray] = useState<number[][]>([[]]);
+
     async function callGetWordleApi(){
         try{
             const response = await fetch('http://localhost:3000/api/get-wordle');
@@ -42,9 +45,14 @@ function App() {
     useEffect(()=>{
         const keyDown = (event: KeyboardEvent) => {
             // santize userInput
+            if(event.key === 'Return' || event.key === 'Enter'){
 
-            keyboardUserInput(event, setInput);
-            // push
+                console.log(event.key);
+                setInput("newLine");
+
+            }else{
+                keyboardUserInput(event, setInput);
+            }
 
         }
         window.addEventListener("keydown", keyDown);
@@ -52,25 +60,55 @@ function App() {
             window.removeEventListener("keydown", keyDown);
         }
     }, []);
-    console.log(input);
+
+    // when input changes, ie re-render needed
+    useEffect(() => {
+            if(input === "newLine"){
+                setTextArray(prevArray =>{
+                    const newGrid = [...prevArray];
+                    newGrid[prevArray.length] = Array(5).fill("");
+                    return newGrid;
+                });
+                setColorsArray(prevArray => {
+                    const newGrid = [...prevArray];
+                    newGrid[prevArray.length] =
+                        Array(5).fill(0);
+                    return newGrid;
+
+                });
+
+            }else{
+                setTextArray(prevArray => {
+                    const newGrid = [...prevArray];
+                    newGrid[prevArray.length-1] = input.split("");
+                    return newGrid;
+                });
+                setColorsArray(prevArray => {
+                    const newGrid = [...prevArray];
+                    newGrid[prevArray.length-1] =
+                        Array(input.length).fill(0);
+                    return newGrid;
+
+                });
+            }
+
+    }, [input]);
+
+    console.log(colorsArray);
 
 
 
 
     // this is for testing, eventually get this array from the api
-    const wordleArray = [
-    []
-    ]
-    const textArray = [
-        []
-    ]
+
+
 
 
   return (
       <main>
 
             <h2>This Cant Just Be Another Wordle Clone Can It?</h2>
-            <WordleDisplay colorsArray={wordleArray} textArray={textArray}></WordleDisplay>
+            <WordleDisplay colorsArray={colorsArray} textArray={textArray}></WordleDisplay>
             <button onClick={() => callGetWordleApi()}>Get Wordle Word (make on load)</button>
 
       </main>
@@ -95,9 +133,7 @@ function keyboardUserInput(event: KeyboardEvent, setInput: React.Dispatch<React.
             });
         }
     }else{
-        if(event.key === 'Return'){
-            /// handle return here
-        }else if(event.key === 'Delete'
+        if(event.key === 'Delete'
             || event.key === 'Backspace'){
             // if delete/backspace remove last character
 
