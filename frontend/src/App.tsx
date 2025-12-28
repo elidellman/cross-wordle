@@ -10,6 +10,7 @@ function App() {
     const [message, setMessage] = useState({});
     const [textArray, setTextArray] = useState<string[][]>([[]]);
     const [colorsArray, setColorsArray] = useState<number[][]>([[]]);
+    const [newLine, setNewLine] = useState(false);
 
     async function callGetWordleApi(){
         try{
@@ -46,9 +47,7 @@ function App() {
         const keyDown = (event: KeyboardEvent) => {
             // santize userInput
             if(event.key === 'Return' || event.key === 'Enter'){
-
-                console.log(event.key);
-                setInput("newLine");
+                setNewLine(true);
 
             }else{
                 keyboardUserInput(event, setInput);
@@ -61,38 +60,52 @@ function App() {
         }
     }, []);
 
+
+
     // when input changes, ie re-render needed
     useEffect(() => {
-            if(input === "newLine"){
-                setTextArray(prevArray =>{
-                    const newGrid = [...prevArray];
-                    newGrid[prevArray.length] = Array(5).fill("");
-                    return newGrid;
-                });
-                setColorsArray(prevArray => {
-                    const newGrid = [...prevArray];
-                    newGrid[prevArray.length] =
-                        Array(5).fill(0);
-                    return newGrid;
+            if(newLine){
 
-                });
+                if(input.length === 5){
+                    setTextArray(prevArray =>{
+                        const newGrid = [...prevArray];
+                        newGrid[prevArray.length] = Array(5).fill("");
+                        return newGrid;
+                    });
+                    setColorsArray(prevArray => {
+                        const newGrid = [...prevArray];
+                        newGrid[prevArray.length] =
+                            Array(5).fill(0);
+                        return newGrid;
+
+                    });
+                    setInput("");
+                }
+
+                setNewLine(false);
 
             }else{
                 setTextArray(prevArray => {
                     const newGrid = [...prevArray];
-                    newGrid[prevArray.length-1] = input.split("");
+                    newGrid[prevArray.length-1] = Array(5).fill("").map((x, index)=>
+                            input[index] ? input[index] : x
+
+                    );
+
                     return newGrid;
                 });
                 setColorsArray(prevArray => {
+                    // right here i should call api
                     const newGrid = [...prevArray];
-                    newGrid[prevArray.length-1] =
-                        Array(input.length).fill(0);
-                    return newGrid;
+                    newGrid[prevArray.length-1] = Array(5).fill(0).map((x, index)=>
+                        input[index] ? input[index] : x
 
+                    );
+                    return newGrid;
                 });
             }
 
-    }, [input]);
+    }, [newLine, input]);
 
     console.log(colorsArray);
 
