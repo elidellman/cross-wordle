@@ -2,12 +2,14 @@ import styles from './WordleDisplay.module.css'
 
 
 interface TileProps {
+    // color value, refactor name before prod
     val?: number;
+    text?: string;
 }
 
 function Tile(props: TileProps) {
 
-    const { val = 0 } = props;
+    const { val = 0, text = ""} = props;
 
     let color: string = "";
 
@@ -25,7 +27,7 @@ function Tile(props: TileProps) {
 
     return(
         <div className={`${styles.tile} ${styles[color]}`}>
-
+            {text}
         </div>
     );
 }

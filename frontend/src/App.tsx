@@ -2,14 +2,12 @@
 import './App.css'
 import {useEffect, useState} from "react";
 import WordleDisplay from "./WordleDisplay/WordleDisplay.tsx";
-
+import * as React from "react";
 
 
 function App() {
 
     const [message, setMessage] = useState({});
-
-
     async function callGetWordleApi(){
         try{
             const response = await fetch('http://localhost:3000/api/get-wordle');
@@ -37,24 +35,76 @@ function App() {
         }
     }, [message]);
 
+    // everytime user input changes call this code
+    // rerender
+    const [input, setInput] = useState("");
+
+    useEffect(()=>{
+        const keyDown = (event: KeyboardEvent) => {
+            // santize userInput
+
+            keyboardUserInput(event, setInput);
+            // push
+
+        }
+        window.addEventListener("keydown", keyDown);
+        return()=>{
+            window.removeEventListener("keydown", keyDown);
+        }
+    }, []);
+    console.log(input);
+
+
+
+
     // this is for testing, eventually get this array from the api
     const wordleArray = [
-        [0,0,1,1,2],
-        [1,1,0,0,2],
-        [0,1,0,1,2],
-        [0,1,0,1,2],
-        [0,0,0,0,2],
+    []
+    ]
+    const textArray = [
+        []
     ]
 
 
   return (
       <main>
+
             <h2>This Cant Just Be Another Wordle Clone Can It?</h2>
-            <WordleDisplay displayArray={wordleArray}></WordleDisplay>
+            <WordleDisplay colorsArray={wordleArray} textArray={textArray}></WordleDisplay>
             <button onClick={() => callGetWordleApi()}>Get Wordle Word (make on load)</button>
 
       </main>
       );
+}
+
+function keyboardUserInput(event: KeyboardEvent, setInput: React.Dispatch<React.SetStateAction<string>> ){
+// concat current input with new character
+    // input must be strictly one char
+    if(event.key.length === 1){
+        const asciiVal = event.key.charCodeAt(0);
+        // check if a-z
+        if(asciiVal >= 122 || asciiVal >= 97){
+            // word is 5 characters max
+            setInput(i => {
+                if(i.length < 5){
+                    return i + event.key;
+                }else{
+                    return i;
+                }
+
+            });
+        }
+    }else{
+        if(event.key === 'Return'){
+            /// handle return here
+        }else if(event.key === 'Delete'
+            || event.key === 'Backspace'){
+            // if delete/backspace remove last character
+
+            setInput(i => i.substring(0,i.length-1));
+        }
+    }
+
 }
 
 export default App
