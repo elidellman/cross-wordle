@@ -3,8 +3,7 @@ import Tile from "./Tile.tsx";
 
 
 interface WordleDisplayProps {
-    colorsArray: number[][];
-    textArray: string[][];
+    grid: { color: number, text: string }[][];
 }
 
 
@@ -12,7 +11,7 @@ function WordleDisplay(props: WordleDisplayProps) {
 
     // using a binary array
 
-    const {colorsArray: colorsArray = [[]], textArray = [[]]} = props;
+    const {grid} = props;
 
 
 
@@ -21,14 +20,14 @@ function WordleDisplay(props: WordleDisplayProps) {
     return(
         // whole display card
         <div className={styles.card}>
-            {colorsArray.length > 0 ?
+            {grid.length > 0 ?
 
-                colorsArray.map((val, rowIndex) =>(
+                grid.map((val, rowIndex) =>(
                 // each row
                 <div className={styles.row} key={rowIndex}>
-                    {val.map((valJ,colIndex) =>(
+                    {val.map((_,colIndex) =>(
                         // each tile
-                        <Tile val={valJ} key ={colIndex} text={textArray[rowIndex][colIndex]}></Tile>
+                        <Tile val={grid[rowIndex][colIndex].color} key ={colIndex} text={grid[rowIndex][colIndex].text}></Tile>
                     ))}
                 </div>
             )): null}

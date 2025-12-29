@@ -11,6 +11,8 @@ let currentWordleAnswer = "";
 const app = express();
 const PORT = 3000;
 
+app.use(express.json());
+
 app.use(cors(
     {
         origin: (origin, callback) => {
@@ -34,6 +36,10 @@ app.get('/', (req, res) => {
     res.send("Hello, this is the not so private NODE JS Cross-Wordle API");
 })
 
+app.post("/", (req, res) => {
+    res.send("POST Request Called");
+})
+
 app.get('/api/get-wordle', (req, res) => {
     // this api call will give a default wordle that does not use the random gen and github list of wordle valid worlds
     // this will need to be implemented tho obviously
@@ -41,11 +47,25 @@ app.get('/api/get-wordle', (req, res) => {
     // lets say "train"
 
     getWordle().then(wordle => {
-        currentWordleAnswer = wordle;
+        currentWordleAnswer = wordle.text;
         res.json(wordle);
         }
     );
 
+
+})
+
+app.post('/api/check-wordle', (req, res) => {
+    const userAnswer = req.body.answer;
+    console.log("user:" + userAnswer);
+    console.log("server: " + currentWordleAnswer);
+
+    if(userAnswer === currentWordleAnswer){
+        res.json("CORRECT");
+
+    }else{
+        res.json("FALSE");
+    }
 })
 
 
