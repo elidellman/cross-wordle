@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 function loadFile(filename) {
 
@@ -30,7 +30,6 @@ async function isValidWordle(word){
     const wordList = await loadFile('./wordle/valid-wordle-words.txt');
     for(let entry of wordList){
 
-        console.log(entry);
         if(entry === word){
             return true;
         }
@@ -41,8 +40,8 @@ async function isValidWordle(word){
 
 
 
-module.exports = {
-    getWordle: getWordle,
+export {
+    getWordle,
     isValidWordle,
 }
 // export function to be used by index.js

@@ -1,10 +1,15 @@
-const express = require('express');
-const cors = require('cors');
+
+import express from 'express';
+import cors from 'cors';
 
 // get wordle
-const {getWordle, isValidWordle} = require('./wordle/HandleWordle');
+
+import {getWordle, isValidWordle} from "./Wordle/HandleWordle.js";
+import callGemini from "./Gemini/CallGemini.js";
+
 // set this value when getting word, global answer val
 let currentWordleAnswer = "";
+
 
 // get crossword will be bellow and call another file
 
@@ -43,7 +48,15 @@ app.post("/", (req, res) => {
 app.post("/api/is-valid-word", (req, res) => {
     console.log("hello");
     isValidWordle(req.body.answer).then((result) => {
-        console.log(result);
+        // if word is valid, generate synonyms now
+        if(result){
+            // input is word to generate synonyms/related words for
+            callGemini(req.body.answer).then((result2) => {
+                console.log("words are " + result2);
+            })
+        }else{
+            // dont do anything since word is garbage
+        }
         res.send(result);
     });
 
