@@ -15,7 +15,7 @@
 
 
 .tile{
-
+    color: black;
     border: 2px solid black;
     width: 10vh;
     aspect-ratio: 1 / 1;
@@ -28,7 +28,7 @@
     background-color: grey;
 }
 .yellow{
-    background-color: yellow;
+    background-color: #b1b105;
 }
 .green{
     background-color: green;

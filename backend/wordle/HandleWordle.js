@@ -26,6 +26,23 @@ async function getWordle(){
 
 }
 
-module.exports = getWordle;
+async function isValidWordle(word){
+    const wordList = await loadFile('./wordle/valid-wordle-words.txt');
+    for(let entry of wordList){
 
+        console.log(entry);
+        if(entry === word){
+            return true;
+        }
+    }
+    return false;
+
+}
+
+
+
+module.exports = {
+    getWordle: getWordle,
+    isValidWordle,
+}
 // export function to be used by index.js
