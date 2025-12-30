@@ -8,24 +8,54 @@ import * as React from "react";
 /*
 * Function calls general backend API and sets a new state to hold data
 * */
-async function callApi(setState: React.Dispatch<React.SetStateAction<object>>, url: string, options?: RequestInit,
-                       ) {
+
+async function callApi(
+    url: string,
+    options?: RequestInit
+){
     try{
         const response = await fetch(url, options);
         if(!response.ok){
             console.log("HTTP error" + response.statusText);
         }
         const data = await response.json();
-        setState(data);
+        return data;
     }catch(e){
         console.error(e);
     }
+    return null;
 }
+
 
 
 function App() {
 
 
+    const submitRow = async () =>{
+        const result = await callApi("http://localhost:3000/api/check-wordle", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({answer: input}),
+
+        });
+
+        const row = Array.from({ length: 5 }, (_, i) => ({
+            color: result[i].answer,
+            text: input[i] || "",
+        }));
+
+        // if there is a new line, push current row to line ,call api and reset input
+            setSubmittedRows((prevState)=>{
+                const grid = [...prevState];
+                grid[prevState.length] = row;
+                return grid;
+
+            })
+            setNewLine(false);
+            return submittedRows;
+    }
 
 
 
@@ -33,7 +63,7 @@ function App() {
 
 
     const [message, setMessage] = useState({});
-    const [checkResult, setCheckResult] = useState({});
+    const [checkResult, setCheckResult] = useState<{answer: number}[]>([])
 
 
     const [submittedRows, setSubmittedRows] = useState<{color: number, text: string}[][]>([[]]);
@@ -86,6 +116,11 @@ function App() {
     }, [input]);
 
 
+    useEffect(() => {
+        if(newLine){
+            submitRow();
+        }
+    }, [newLine]);
 
 
     // when input changes, ie re-render needed
@@ -93,54 +128,25 @@ function App() {
 
     const displayArray = (()=>{
         // copy input into new row
-        const row = Array.from({length: 5}, (_,i)=> ({
-            color: 0, text: input[i] || ""
-        }));
-        if(newLine){
-            // if there is a new line, push current row to line ,call api and reset input
-            setSubmittedRows((prevState)=>{
-                const grid = [...prevState];
-                console.log(JSON.stringify(input));
 
-
-
-                callApi(setCheckResult, "http://localhost:3000/api/check-wordle", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({answer: input}),
-
-                })
-
-                grid[prevState.length] = row;
-                console.log(grid);
-                setInput("");
-
-
-
-
-                return grid;
-
-            })
-            setNewLine(false);
-            return submittedRows;
-        }else{
             // update current display with new input
             const grid = [...submittedRows];
             // add new ones
+            const row = Array.from({length: 5}, (_,i)=> ({
+                color: 0, text: input[i] || ""
+            }));
             grid[submittedRows.length] = row;
 
             return grid;
-        }
-
-
     })();
     console.log(displayArray);
 
     useEffect(() => {
         console.log(checkResult);
+
     }, [checkResult]);
+
+
 
 
 
@@ -155,7 +161,7 @@ function App() {
             <h2>This Cant Just Be Another Wordle Clone Can It?</h2>
             <WordleDisplay grid={displayArray}></WordleDisplay>
             <button onClick={() =>
-                callApi(setMessage, 'http://localhost:3000/api/get-wordle', undefined)
+                callApi('http://localhost:3000/api/get-wordle', undefined)
             }>Get Wordle Word (make on load)</button>
 
       </main>

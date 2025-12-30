@@ -59,13 +59,16 @@ app.post('/api/check-wordle', (req, res) => {
     const userAnswer = req.body.answer;
     console.log("user:" + userAnswer);
     console.log("server: " + currentWordleAnswer);
-
-    if(userAnswer === currentWordleAnswer){
-        res.json("CORRECT");
-
-    }else{
-        res.json("FALSE");
-    }
+    const row = Array.from(userAnswer).map((x,indexX) => {
+        if(x === currentWordleAnswer[indexX]) {
+            return 2;
+        }else if(currentWordleAnswer.includes(x)){
+            return 1;
+        }else{
+            return 0;
+        }
+    });
+    res.send(row);
 })
 
 
