@@ -59,14 +59,27 @@ app.post('/api/check-wordle', (req, res) => {
     const userAnswer = req.body.answer;
     console.log("user:" + userAnswer);
     console.log("server: " + currentWordleAnswer);
+
+
+
     const row = Array.from(userAnswer).map((x,indexX) => {
+
         if(x === currentWordleAnswer[indexX]) {
             return 2;
         }else if(currentWordleAnswer.includes(x)){
-            return 1;
-        }else{
-            return 0;
+            // get location of other letter and check if the user has already put one there
+            const currentWordleAnswerArray = Array.from(currentWordleAnswer);
+
+            for(let i = 0; i < currentWordleAnswerArray.length; i++) {
+                if(currentWordleAnswerArray[i] === x){
+                    if(currentWordleAnswerArray[i] !== userAnswer[i]){
+                        return 1;
+                    }
+                }
+            }
+
         }
+        return 0;
     });
     res.send(row);
 })
