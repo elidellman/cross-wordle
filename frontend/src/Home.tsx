@@ -166,6 +166,7 @@ function Home() {
                     submitRow();
                 }
             });
+
             setNewLine(false);
         }
     }, [newLine]);
