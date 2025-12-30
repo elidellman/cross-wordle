@@ -1,2 +1,2 @@
 # cross-wordle
-A react based web game that combines crosswords and wordles
+A React based web game that combines crosswords and wordles
