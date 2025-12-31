@@ -3,25 +3,9 @@ import {useEffect, useState} from "react";
 import WordleDisplay from "./WordleDisplay/WordleDisplay.tsx";
 import * as React from "react";
 import { useNavigate} from "react-router-dom";
-import validWords from "./valid-wordle-words.txt";
+import {callApi} from "./CallApi.tsx";
 
 
-async function callApi(
-    url: string,
-    options?: RequestInit
-){
-    try{
-        const response = await fetch(url, options);
-        if(!response.ok){
-            console.log("HTTP error" + response.statusText);
-        }
-        const data = await response.json();
-        return data;
-    }catch(e){
-        console.error(e);
-    }
-    return null;
-}
 
 function keyboardUserInput(event: KeyboardEvent, setInput: React.Dispatch<React.SetStateAction<string>> ){
 // concat current input with new character
@@ -209,6 +193,8 @@ function Home() {
         }
     }, [wordleComplete, navigate]);
 
+
+
     return(
 
         <>
@@ -216,10 +202,7 @@ function Home() {
 
                 <h2>This Cant Just Be Another Wordle Clone Can It?</h2>
                 <WordleDisplay grid={displayArray}></WordleDisplay>
-                <button onClick={() =>
-                    callApi('http://localhost:3000/api/get-wordle', undefined)
-                }>Get Wordle Word (make on load)
-                </button>
+
 
             </main>
         </>

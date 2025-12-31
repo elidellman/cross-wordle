@@ -4,11 +4,8 @@ import './App.css'
 import {Routes, Route} from "react-router-dom";
 import Crossword from "./Crossword.tsx";
 import Home from "./Home.tsx";
-
-/*
-* Function calls general backend API and sets a new state to hold data
-* */
-
+import {useEffect} from "react";
+import {callApi} from "./CallApi.tsx";
 
 
 
@@ -16,14 +13,13 @@ import Home from "./Home.tsx";
 function App() {
 
 
-
-
-
-
-
-    // this is for testing, eventually get this array from the api
-
-
+    // when app loads or page reloads
+    // reset everything on server to default values
+    useEffect(() => {
+        /*callApi("http://localhost:3000/api/reset-vals").then((result)=>{
+            console.log("Reset Status: " + result);
+        });*/
+    }, []);
 
 
   return (

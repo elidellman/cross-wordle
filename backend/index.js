@@ -6,15 +6,30 @@ import cors from 'cors';
 
 import {getWordle, isValidWordle} from "./Wordle/HandleWordle.js";
 import callGemini from "./Gemini/CallGemini.js";
+import {getCrossword} from "./Crossword/HandleCrossword.js";
+import {addSynonymsToList} from "./Crossword/HandleCrossword.js";
 
 // set this value when getting word, global answer val
 let currentWordleAnswer = "";
+let crossWordList = [];
 
 
-// get crossword will be bellow and call another file
+// get Crossword will be bellow and call another file
 
 const app = express();
 const PORT = 3000;
+
+function resetValues(){
+    currentWordleAnswer = "";
+    crossWordList = [];
+    getWordle().then(wordle => {
+            currentWordleAnswer = wordle.text;
+        }
+    );
+
+}
+
+
 
 app.use(express.json());
 
@@ -36,6 +51,19 @@ app.use(cors(
     }
 ));
 
+app.get("/api/reset-vals", (req, res) => {
+    try {
+        resetValues();
+        res.json("OK");
+    } catch(err) {
+        res.json("ERROR");
+    }
+
+})
+
+app.get("/api/get-crossword", (req, res) => {
+    getCrossword();
+})
 
 app.get('/', (req, res) => {
     res.send("Hello, this is the not so private NODE JS Cross-Wordle API");
@@ -50,10 +78,10 @@ app.post("/api/is-valid-word", (req, res) => {
     isValidWordle(req.body.answer).then((result) => {
         // if word is valid, generate synonyms now
         if(result){
+            // if word is valid generate and store new words
+            addSynonymsToList(req.body.answer);
             // input is word to generate synonyms/related words for
-            callGemini(req.body.answer).then((result2) => {
-                console.log("words are " + result2);
-            })
+
         }else{
             // dont do anything since word is garbage
         }
@@ -63,11 +91,8 @@ app.post("/api/is-valid-word", (req, res) => {
 })
 
 app.get('/api/get-wordle', (req, res) => {
-    // this api call will give a default wordle that does not use the random gen and github list of wordle valid worlds
-    // this will need to be implemented tho obviously
-    // this is just for testing it consistently with the same word
-    // lets say "train"
 
+    /// DEPRACATED remove this function after debug
     getWordle().then(wordle => {
         currentWordleAnswer = wordle.text;
         res.json(wordle);
