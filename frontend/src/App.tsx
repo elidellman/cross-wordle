@@ -16,9 +16,9 @@ function App() {
     // when app loads or page reloads
     // reset everything on server to default values
     useEffect(() => {
-        /*callApi("http://localhost:3000/api/reset-vals").then((result)=>{
+        callApi("http://localhost:3000/api/reset-vals").then((result)=>{
             console.log("Reset Status: " + result);
-        });*/
+        });
     }, []);
 
 

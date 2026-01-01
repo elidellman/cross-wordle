@@ -6,8 +6,9 @@ import cors from 'cors';
 
 import {getWordle, isValidWordle} from "./Wordle/HandleWordle.js";
 import callGemini from "./Gemini/CallGemini.js";
-import {getCrossword} from "./Crossword/HandleCrossword.js";
+import {getCrossword, resetWordList} from "./Crossword/HandleCrossword.js";
 import {addSynonymsToList} from "./Crossword/HandleCrossword.js";
+
 
 // set this value when getting word, global answer val
 let currentWordleAnswer = "";
@@ -22,10 +23,13 @@ const PORT = 3000;
 function resetValues(){
     currentWordleAnswer = "";
     crossWordList = [];
+    resetWordList();
+
     getWordle().then(wordle => {
             currentWordleAnswer = wordle.text;
         }
     );
+    console.log(currentWordleAnswer);
 
 }
 
@@ -74,12 +78,15 @@ app.post("/", (req, res) => {
 })
 
 app.post("/api/is-valid-word", (req, res) => {
-    console.log("hello");
     isValidWordle(req.body.answer).then((result) => {
         // if word is valid, generate synonyms now
         if(result){
+            console.log(req.body.answer);
+
             // if word is valid generate and store new words
-            addSynonymsToList(req.body.answer);
+            addSynonymsToList(req.body.answer).then((result2) => {
+                console.log(result2);
+            });
             // input is word to generate synonyms/related words for
 
         }else{

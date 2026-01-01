@@ -1,5 +1,6 @@
 import {Link, useLocation} from "react-router-dom";
 import {callApi} from "./CallApi.tsx";
+import {useEffect} from "react";
 
 
 
@@ -15,9 +16,15 @@ function Crossword(){
 
     });
 
-    callApi("http://localhost:3000/api/get-crossword")
+    const getCrossword = async ()=>{
+        const result = await callApi("http://localhost:3000/api/get-crossword");
+        console.log(result);
+    }
 
-    console.log(words);
+
+
+    getCrossword();
+
 
     return <h2>HElO</h2>
 }

@@ -48,6 +48,7 @@ function Home() {
             body: JSON.stringify({answer: input}),
 
         });
+        console.log("After API CALL");
         for(let i = 0; i < 5; i++){
             if(result[i] != 2){
                 break;
