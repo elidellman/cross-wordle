@@ -1,6 +1,8 @@
 import {Link, useLocation} from "react-router-dom";
 import {callApi} from "./CallApi.tsx";
-import {useEffect} from "react";
+import {useCallback, useEffect, useState} from "react";
+import CrosswordDisplay from "./CrosswordDisplay/CrosswordDisplay.tsx";
+import crosswordDisplay from "./CrosswordDisplay/CrosswordDisplay.tsx";
 
 
 
@@ -16,17 +18,31 @@ function Crossword(){
 
     });
 
-    const getCrossword = async ()=>{
+
+
+    const [crossword, setCrossword] = useState([]);
+
+
+    const displayArray = async () =>{
         const result = await callApi("http://localhost:3000/api/get-crossword");
-        console.log(result);
+        return result;
     }
 
 
+    useEffect(() => {
+        displayArray().then(
+            result => setCrossword(result),
+        );
+    }, []);
 
-    getCrossword();
 
 
-    return <h2>HElO</h2>
+
+    return(<>
+
+            <CrosswordDisplay wordList={crossword} />
+        </>
+    )
 }
 
 export default Crossword

@@ -1,27 +1,27 @@
-import styles from './WordleDisplay.module.css'
-
 
 interface TileProps {
-    // color value, refactor name before prod
+    // on wordle val is color 0/1/2
+    // on crossword val is if it has text or not 0/1
     val?: number;
     text?: string;
+    styles: CSSModuleClasses,
 }
 
 function Tile(props: TileProps) {
 
-    const { val = 0, text = ""} = props;
+    const { val = 0, text = "", styles} = props;
 
     let color: string = "";
 
     switch (val) {
         case 0:
-            color = "grey";
+            color = "display1";
             break;
         case 1:
-            color = "yellow";
+            color = "display2";
             break;
         case 2:
-            color = "green";
+            color = "display3";
             break;
     }
 

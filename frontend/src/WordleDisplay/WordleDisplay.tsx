@@ -1,5 +1,5 @@
 import styles from './WordleDisplay.module.css'
-import Tile from "./Tile.tsx";
+import Tile from "../Tile.tsx";
 
 
 interface WordleDisplayProps {
@@ -27,7 +27,7 @@ function WordleDisplay(props: WordleDisplayProps) {
                 <div className={styles.row} key={rowIndex}>
                     {val.map((_,colIndex) =>(
                         // each tile
-                        <Tile val={grid[rowIndex][colIndex].color} key ={colIndex} text={grid[rowIndex][colIndex].text}></Tile>
+                        <Tile styles={styles} val={grid[rowIndex][colIndex].color} key ={colIndex} text={grid[rowIndex][colIndex].text}></Tile>
                     ))}
                 </div>
             )): null}

@@ -6,7 +6,7 @@ import cors from 'cors';
 
 import {getWordle, isValidWordle} from "./Wordle/HandleWordle.js";
 import callGemini from "./Gemini/CallGemini.js";
-import {getCrossword, resetWordList} from "./Crossword/HandleCrossword.js";
+import {createCrossword, getCrossword, resetWordList} from "./Crossword/HandleCrossword.js";
 import {addSynonymsToList} from "./Crossword/HandleCrossword.js";
 
 
@@ -66,7 +66,8 @@ app.get("/api/reset-vals", (req, res) => {
 })
 
 app.get("/api/get-crossword", (req, res) => {
-    getCrossword();
+    createCrossword();
+    res.json(getCrossword());
 })
 
 app.get('/', (req, res) => {
