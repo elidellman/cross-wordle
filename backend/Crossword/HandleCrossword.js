@@ -13,9 +13,10 @@ function WordOverLap(word1, word2, letter, val){
     this.val = val;
 }
 
-function Word(word, startXY, isHorizontal){
+function Word(word, startRowCol, isHorizontal){
     this.word = word;
-    this.startXY = startXY;
+    this.row = startRowCol[0];
+    this.col = startRowCol[1];
     this.isHorizontal = isHorizontal;
 }
 
@@ -81,7 +82,7 @@ function initalizeMap(){
     if(index === -1){
         wordList.splice(index, 1);
     }
-
+    console.log(crosswordMap);
 
 
 }
@@ -111,12 +112,40 @@ function getOverlap(word1Object, word2Object){
                 biggestSum.letter = commonLetter;
                 biggestSum.val = sumPositions;
             }
+
         }
     }
     console.log(biggestSum.val + " at " + biggestSum.letter);
     return biggestSum;
 }
 
+// add word 2 to crossword map
+function addToMap(word1Object, word2Object, letter, isHorizontal) {
+
+    const word1 = Array.from(word1Object);
+    const word2 = Array.from(word2Object);
+
+    console.log(crosswordMap);
+    if(isHorizontal){
+
+    }else{
+        const colIndexOfLetter = word1.indexOf(letter);
+        let letterCount = 0;
+
+
+
+        for(let row = (word1Object.row - word2.length); row < (wordList.length); row--){
+
+            crosswordMap[row][colIndexOfLetter] = word2.word[letterCount];
+            letterCount++;
+
+        }
+
+    }
+
+
+
+}
 
 function createCrossword(){
 
@@ -129,14 +158,20 @@ function createCrossword(){
         const word1 = addedWords[i];
         let largestOverlap = { word1: "", word2: "", letter: "", val: 0, isHorizontal: false};
         for(let j = 0; j < wordList.length; j++){
-            const word2 = new Word(wordList[j]);
+            const word2 = new Word(wordList[j], [null, null], false );
             if(word1 !== word2){
 
                 const currentOverlap = getOverlap(word1, word2);
                 if(currentOverlap.val > largestOverlap.val){
                     // check if word will fit in array
 
-                    isRoomForWord(word1, word2, currentOverlap.letter);
+                    if(isRoomForWord(word1, word2, currentOverlap.letter)){
+                        // if there is room add the word 2 to the crossword
+                        addToMap(word1, word2, currentOverlap.letter , !word1.isHorizontal);
+                    }else{
+                        //ignore
+                    }
+
                     largestOverlap = currentOverlap;
 
                 }
@@ -156,9 +191,10 @@ function isRoomForWord(word1Object, word2Object, letter){
 
     // we assume that word1 is in the list since its from the list of added words
     console.log("CHECKING IF THERE IS ROOM");
-
     const word1 = Array.from(word1Object.word);
     const word2 = Array.from(word2Object.word);
+    console.log(word1);
+    console.log(word2);
 
 
     // borders are 00, 0,25, 25,0 and 25,25
@@ -172,16 +208,51 @@ function isRoomForWord(word1Object, word2Object, letter){
         // and the characters it has below/after the overlap cant go below max height (25)
 
         const wordHeight = word2.length;
-        const indexOfLetterInWord1 = word1.indexOf(letter);
+        const indexOfLetterInWord2 = word2.indexOf(letter);
 
-        const charsAfterOverlap = wordHeight - indexOfLetterInWord1;
+        const charsAfterOverlap = wordHeight - indexOfLetterInWord2;
         const charsBeforeOverlap = wordHeight - charsAfterOverlap;
 
-        console.log(charsBeforeOverlap + "= before | after=" + charsAfterOverlap);
+        console.log(charsBeforeOverlap + "= before | letter+after=" + charsAfterOverlap);
+        console.log(word1Object.row);
+        if(word1Object.row - charsBeforeOverlap < 0){
+            return false;
+        }
+        if(word1Object.row + charsAfterOverlap > colLength){
+            return false;
+        }
+
+        const indexOfLetterInWord1 = word1.indexOf(letter);
+
+        let colIndex = word1Object.col + indexOfLetterInWord1
+
+        // navigate backwards/up since word2 is vertical
+        // in the word2 and check if spots are empty or not
+        // starting one above the intersection
+        for(let row = word1Object.row - 1; row >
+            (word1Object.row - charsBeforeOverlap - 1);
+            row--){
+            console.log(crosswordMap[row][colIndex]);
+            console.log(row + "," + colIndex );
+            if(crosswordMap[row][colIndex]){
+                return false;
+            }
+        }
+
+        for(let row = word1Object.row + 1; row < (word1Object.row + charsAfterOverlap); row++){
+            console.log(row + "," + colIndex);
+            if(crosswordMap[row][colIndex]){
+                return false;
+            }
+        }
+
+
 
     }else{
         const wordWidth = word2.length;
     }
+
+    return true;
 
 }
 
