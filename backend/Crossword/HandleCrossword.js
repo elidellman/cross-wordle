@@ -354,6 +354,12 @@ function isRoomForWord(word1Object, word2Object, letter){
                 if(crosswordMap[row - 1][colIndex]){
                     return false;
                 }
+                //other side of overlap
+                if(row-2 >= 0){
+                    if(crosswordMap[row - 1][colIndex]){
+                        return false;
+                    }
+                }
             }
 
             if(colIndex-1 >= 0){
@@ -377,6 +383,11 @@ function isRoomForWord(word1Object, word2Object, letter){
             if(row+1 < colLength){
                 if(crosswordMap[row + 1][colIndex]){
                     return false;
+                }
+                if(row+2 < colLength){
+                    if(crosswordMap[row + 2][colIndex]){
+                        return false;
+                    }
                 }
             }
             if(colIndex-1 >= 0){
@@ -448,6 +459,11 @@ function isRoomForWord(word1Object, word2Object, letter){
                 if(crosswordMap[rowIndex][col-1]){
                     return false;
                 }
+                if(col-2 >= 0){
+                    if(crosswordMap[rowIndex][col-2]){
+                        return false;
+                    }
+                }
             }
 
             if(rowIndex-1 >= 0){
@@ -470,6 +486,11 @@ function isRoomForWord(word1Object, word2Object, letter){
             if(col+1 < colLength){
                 if(crosswordMap[rowIndex][col+1]){
                     return false;
+                }
+                if(col+2 < colLength){
+                    if(crosswordMap[rowIndex][col+2]){
+                        return false;
+                    }
                 }
             }
 
