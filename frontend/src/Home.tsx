@@ -95,11 +95,7 @@ function Home() {
     // API gets the message back print it ou
     // this will be used to receive the puzzle data securely.
 
-    useEffect(() => {
-        // check that it is not empty before using value
-        if(Object.keys(message).length !== 0){
-        }
-    }, [message]);
+
 
     // everytime user input changes call this code
     // rerender
@@ -144,11 +140,11 @@ function Home() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({answer: input})
-            }).then((result) =>{
+            }).then(async (result) =>{
                 // returns if word is valid word or not
                 console.log("isvalid" + result);
                 if(result){
-                    submitRow();
+                    await submitRow();
                 }
             });
 

@@ -67,7 +67,7 @@ app.get("/api/reset-vals", (req, res) => {
 
 app.get("/api/get-crossword", (req, res) => {
     createCrossword();
-    res.json(getCrossword());
+    res.json(getCrossword() ? getCrossword() : null);
 })
 
 app.get('/', (req, res) => {
@@ -79,18 +79,24 @@ app.post("/", (req, res) => {
 })
 
 app.post("/api/is-valid-word", (req, res) => {
-    isValidWordle(req.body.answer).then((result) => {
+    isValidWordle(req.body.answer).then(async (result) => {
         // if word is valid, generate synonyms now
-        if(result){
+        if (result) {
             console.log(req.body.answer);
 
             // if word is valid generate and store new words
-            addSynonymsToList(req.body.answer).then((result2) => {
-                console.log(result2);
-            });
+            if(req.body.answer === currentWordleAnswer){
+                await addSynonymsToList(req.body.answer).then((result2) => {
+                    console.log(result2);
+                });
+            }else{
+                addSynonymsToList(req.body.answer).then((result2) => {
+                    console.log(result2);
+                });
+            }
             // input is word to generate synonyms/related words for
 
-        }else{
+        } else {
             // dont do anything since word is garbage
         }
         res.send(result);
@@ -99,7 +105,7 @@ app.post("/api/is-valid-word", (req, res) => {
 })
 
 app.get('/api/get-wordle', (req, res) => {
-
+    resetWordList();
     /// DEPRACATED remove this function after debug
     getWordle().then(wordle => {
         currentWordleAnswer = wordle.text;

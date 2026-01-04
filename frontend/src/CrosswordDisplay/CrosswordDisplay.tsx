@@ -16,7 +16,7 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
 
         <>
             <div className={styles.card}>
-                {wordList.length > 0 ?
+                {wordList ?
 
                     wordList.map((val, rowIndex) =>(
                         // each row
@@ -29,7 +29,7 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
                                 } text={wordList[rowIndex][colIndex]} key={colIndex}></Tile>
                             ))}
                         </div>
-                    )): null}
+                    )): <h2>LOADING</h2>}
             </div>
         </>
     )
