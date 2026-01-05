@@ -1,5 +1,9 @@
 import styles from "./CrosswordDisplay.module.css";
 import Tile from "../Tile.tsx";
+import InputBox from "./InputBox.tsx";
+import CrosswordTile from "./crosswordTile.tsx";
+
+
 
 
 interface CrosswordDisplayProps {
@@ -9,6 +13,8 @@ interface CrosswordDisplayProps {
 function CrosswordDisplay(props: CrosswordDisplayProps) {
 
     const {wordList} = props;
+    let focusedTile = null;
+
 
 
 
@@ -23,10 +29,12 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
                         <div className={styles.row} key={rowIndex}>
                             {val.map((_,colIndex) =>(
                                 // each tile
-                                <Tile styles={styles} val={
-                                    wordList[rowIndex][colIndex] ? 1: 0
+                                    <CrosswordTile styles={styles} val={
+                                        wordList[rowIndex][colIndex] ? "display1" : "display0"
 
-                                } text={wordList[rowIndex][colIndex]} key={colIndex}></Tile>
+                                    } text={wordList[rowIndex][colIndex]} key={colIndex}
+
+                                    ></CrosswordTile>
                             ))}
                         </div>
                     )): <h2>LOADING</h2>}

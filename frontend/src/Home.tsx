@@ -179,8 +179,26 @@ function Home() {
 
     const navigate = useNavigate();
 
+    const resetVals = async () => {
+        const result = await callApi("http://localhost:3000/api/reset-vals");
+        return result;
+    }
+
+    // on mount reset wordle and crossword list
+    useEffect(() => {
+        console.log("pageload");
+        resetVals();
+    }, []);
+
+    const createArray = async () =>{
+        const result = await callApi("http://localhost:3000/api/create-crossword");
+        return result;
+    }
+
+
     useEffect(() => {
         if(wordleComplete){
+            createArray();
             navigate(`/crossword/`, {
                 replace: false,
                 state: submittedRows,

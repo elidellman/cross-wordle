@@ -6,7 +6,13 @@ import cors from 'cors';
 
 import {getWordle, isValidWordle} from "./Wordle/HandleWordle.js";
 import callGemini from "./Gemini/CallGemini.js";
-import {createCrossword, getCrossword, resetWordList} from "./Crossword/HandleCrossword.js";
+import {
+    compareCrossword,
+    createCrossword,
+    getCrossword,
+    resetWordList,
+    setAvailibleWords
+} from "./Crossword/HandleCrossword.js";
 import {addSynonymsToList} from "./Crossword/HandleCrossword.js";
 
 
@@ -65,9 +71,28 @@ app.get("/api/reset-vals", (req, res) => {
 
 })
 
-app.get("/api/get-crossword", (req, res) => {
+
+app.get("/api/create-crossword", (req, res) => {
+    console.log("create crossword");
     createCrossword();
-    res.json(getCrossword() ? getCrossword() : null);
+
+})
+
+app.get("/api/get-crossword", (req, res) => {
+    const result = getCrossword();
+    //remove later
+    console.log("result", result);
+    if(result.flat().every(e => e === '')){
+        createCrossword();
+        getCrossword();
+    }
+    res.json(result ? result : null);
+
+})
+
+app.get("api/compare-crossword", (req, res) => {
+    const result = compareCrossword(req.body.text);
+    res.send(result);
 })
 
 app.get('/', (req, res) => {
@@ -105,7 +130,6 @@ app.post("/api/is-valid-word", (req, res) => {
 })
 
 app.get('/api/get-wordle', (req, res) => {
-    resetWordList();
     /// DEPRACATED remove this function after debug
     getWordle().then(wordle => {
         currentWordleAnswer = wordle.text;

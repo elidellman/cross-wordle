@@ -6,6 +6,9 @@ let overlapTiles = []
 
 const rowLength = 20;
 const colLength = 20;
+let crosswordMap = Array.from(({length: rowLength}), ()=> Array(colLength).fill(""));
+let addedWords = []
+
 
 function WordOverLap(word1, word2, letter, val){
 
@@ -22,18 +25,7 @@ function Word(word, startRowCol, isHorizontal){
     this.isHorizontal = isHorizontal;
 }
 
-
-let crosswordMap = Array.from(({length: rowLength}), ()=> Array(colLength).fill(""));
-
-// holds their name and start position in the map
-let addedWords = []
-
-
-function initializeMap(){
-    //place first word in middle of grid
-    console.log("INITALIZATION IS CALLED");
-    console.log(addedWords);
-
+function setAvailibleWords(){
     if(wordleSynonyms.length > 0){
         availableWordList = wordleSynonyms;
     }else{
@@ -48,12 +40,14 @@ function initializeMap(){
             'alphabet',   'literacy',
             'symbols',    'abcee'
         ];
-
     }
+}
 
-    addedWords = [];
-    crosswordMap = Array.from(({length: rowLength}), ()=> Array(colLength).fill(""));
-    overlapTiles = [];
+function initializeMap(){
+    //place first word in middle of grid
+    console.log("INITALIZATION IS CALLED");
+    console.log("wordles are " + availableWordList);
+
 
     // first word will be last word
     const firstWord = availableWordList[availableWordList.length-1];
@@ -103,7 +97,6 @@ function getOverlap(word1Object, word2Object){
 
     // the best situtation for overlap is where the intersection happens in the most central
     // part of the word
-    console.log(word1 + " against " + word2);
 
 
     let biggestSum = new WordOverLap(word1Object, word2Object, "", 0, !word1Object.isHorizontal);
@@ -128,7 +121,6 @@ function getOverlap(word1Object, word2Object){
 
         }
     }
-    console.log(biggestSum.val + " at " + biggestSum.letter);
     return biggestSum;
 }
 
@@ -139,13 +131,15 @@ function addToMap(overlapObject) {
     const word1 = Array.from(overlapObject.word1.word);
     const word2 = Array.from(overlapObject.word2.word);
 
-    const overlapCoordinate = [ (overlapObject.word1.row) ,
-        (overlapObject.word1.col
-            + overlapObject.word1.word.indexOf(overlapObject.letter))];
 
-    overlapTiles.push(overlapCoordinate);
 
     if(overlapObject.word2.isHorizontal){
+        const overlapCoordinate = [ (overlapObject.word1.row) ,
+            (overlapObject.word1.col
+                + overlapObject.word1.word.indexOf(overlapObject.letter))];
+
+        overlapTiles.push(overlapCoordinate);
+
         const letter = overlapObject.letter;
         const word2Width = word2.length;
 
@@ -158,25 +152,20 @@ function addToMap(overlapObject) {
         // place each letter in the map starting at the first index and then pushing the new word object to the map
 
         let letterCount = 0;
-        console.log("before" + charsBeforeOverlap +  "after " + charsAfterOverlap);
         const startCol = (overlapObject.word1.col - charsBeforeOverlap);
         const startRow = overlapObject.word1.row + indexInWord1;
 
-        console.log(startCol, startRow);
-
+        console.log(overlapObject.word1.word);
         for(let col = startCol;
             col < (overlapObject.word1.col + charsAfterOverlap); col++) {
-            console.log("setting address " + startRow + "," + col + "to" +
-                word2[letterCount]);
+            console.log("row: " + startRow);
             crosswordMap[startRow][col] = word2[letterCount];
             letterCount++;
         }
-        console.log(crosswordMap);
 
 
 
         addedWords.push(new Word(overlapObject.word2.word, [startRow, startCol], !overlapObject.word1.isHorizontal));
-        console.log(availableWordList)
         overlapTiles.push([startRow])
         const index = availableWordList.indexOf(overlapObject.word2.word);
         if(index !== -1){
@@ -184,6 +173,10 @@ function addToMap(overlapObject) {
         }
 
     }else{
+        const overlapCoordinate = [ (overlapObject.word1.row + overlapObject.word1.word.indexOf(overlapObject.letter.letter)) ,
+            (overlapObject.word1.col)];
+
+        overlapTiles.push(overlapCoordinate);
 
         const letter = overlapObject.letter;
         const word2Height = word2.length;
@@ -194,37 +187,30 @@ function addToMap(overlapObject) {
         const charsAfterOverlap = word2Height - indexInWord2;
         const charsBeforeOverlap = word2Height - charsAfterOverlap;
 
-        console.log("before" + charsBeforeOverlap + " after" + charsAfterOverlap);
-
-        console.log("index1: " + indexInWord1 + " index2: " + indexInWord2);
-
         // place each letter in the map starting at the first index and then pushing the new word object to the map
 
         let letterCount = 0;
 
         const startCol = (overlapObject.word1.col + indexInWord1);
         const startRow = overlapObject.word1.row - charsBeforeOverlap;
-
+        console.log(overlapObject.word2.word);
         for(let row = startRow;
             row < (overlapObject.word1.row + charsAfterOverlap); row++) {
-            console.log("setting address " + row + "," + startCol + "to" +
-            word2[letterCount]);
+            console.log("row: " + row);
+            console.log("placing" + word2[letterCount]);
             crosswordMap[row][startCol] = word2[letterCount];
+
             letterCount++;
         }
 
         addedWords.push(new Word(overlapObject.word2.word, [startRow, startCol], !overlapObject.word1.isHorizontal));
-        console.log(availableWordList)
         const index = availableWordList.indexOf(overlapObject.word2.word);
         if(index !== -1){
             availableWordList.splice(index, 1);
         }
-
-        console.log(" i just removed", word2);
-        console.log("words are" + availableWordList);
+        console.log(availableWordList);
 
     }
-    console.log(crosswordMap);
 
 
 
@@ -234,7 +220,9 @@ function addToMap(overlapObject) {
 function createCrossword(){
 
     console.log("Crossword");
+    setAvailibleWords();
     initializeMap();
+
 
     // after a word is added we check against only current words
     // so it starts against just the starting word
@@ -262,13 +250,9 @@ function createCrossword(){
                 addToMap(largestOverlap);
             }
         }
-        console.log("startsize" + startSize);
-        console.log("currentSize" + addedWords.length);
         if(startSize < addedWords.length){
             genWords();
         }else{
-            console.log("GENERATION COMPLETE")
-            console.log("Remaining words are: " + availableWordList);
             //clear word list to be extra safe
 
         }
@@ -283,13 +267,8 @@ function createCrossword(){
 function isRoomForWord(word1Object, word2Object, letter){
 
     // we assume that word1 is in the list since its from the list of added words
-    console.log("CHECKING IF THERE IS ROOM");
-
     const word1 = Array.from(word1Object.word);
     const word2 = Array.from(word2Object.word);
-    console.log(word1);
-    console.log(word2);
-
 
     // borders are 00, 0,25, 25,0 and 25,25
     // if any word would go over that it is invalid, this can just be done
@@ -313,25 +292,16 @@ function isRoomForWord(word1Object, word2Object, letter){
         }
 
         const charsAfterOverlap = wordHeight - indexOfLetterInWord2;
-        console.log(wordHeight + " " + indexOfLetterInWord2);
         const charsBeforeOverlap = wordHeight - charsAfterOverlap;
 
-        console.log(charsBeforeOverlap + "= before | letter+after=" + charsAfterOverlap);
-        console.log(word1Object.row + " poop");
 
         if(word1Object.row - charsBeforeOverlap < 0){
-            console.log("1");
             return false;
         }
         if(word1Object.row + charsAfterOverlap > rowLength){
-            console.log("2");
 
             return false;
         }
-        console.log("3");
-
-
-
 
         const indexOfLetterInWord1 = word1.indexOf(letter);
 
@@ -340,7 +310,18 @@ function isRoomForWord(word1Object, word2Object, letter){
         // navigate backwards/up since word2 is vertical
         // in the word2 and check if spots are empty or not
         // starting one above the intersection
-        console.log("here");
+
+        if(word1Object.row + 1 < colLength){
+            if(crosswordMap[word1Object.row + 1][colIndex]){
+                return false;
+            }
+        }
+        if(word1Object.row - 1 > 0){
+            if(crosswordMap[word1Object.row - 1][colIndex]){
+                return false;
+            }
+        }
+
         for(let row = word1Object.row - 1; row >
             (word1Object.row - charsBeforeOverlap - 1);
             row--){
@@ -349,7 +330,6 @@ function isRoomForWord(word1Object, word2Object, letter){
             if(crosswordMap[row][colIndex]){
                 return false;
             }
-            console.log(row);
             if(row-1 >= 0){
                 if(crosswordMap[row - 1][colIndex]){
                     return false;
@@ -376,7 +356,6 @@ function isRoomForWord(word1Object, word2Object, letter){
         }
 
         for(let row = word1Object.row + 1; row < (word1Object.row + charsAfterOverlap); row++){
-            console.log(row + "," + colIndex);
             if(crosswordMap[row][colIndex]){
                 return false;
             }
@@ -419,21 +398,16 @@ function isRoomForWord(word1Object, word2Object, letter){
         const charsAfterOverlap = wordWidth - indexOfLetterInWord2;
         const charsBeforeOverlap = wordWidth - charsAfterOverlap;
 
-        console.log(charsBeforeOverlap + "= before | letter+after=" + charsAfterOverlap);
-        console.log(word1Object.col);
 
         // if overflow to the left
         if(word1Object.col - charsBeforeOverlap < 0){
-            console.log("1");
             return false;
         }
         // if overflow to the right
         if(word1Object.col + charsAfterOverlap > colLength){
-            console.log("2");
             return false;
         }
 
-        console.log("3");
         // if there is a character 1 before the start
 
 
@@ -445,7 +419,16 @@ function isRoomForWord(word1Object, word2Object, letter){
         // in the word2 and check if spots are empty or not
         // starting
 
-
+        if(word1Object.col + 1 < colLength){
+            if(crosswordMap[rowIndex][word1Object.col + 1]){
+                return false;
+            }
+        }
+        if(word1Object.col - 1 > 0){
+            if(crosswordMap[rowIndex][word1Object.col - 1]){
+                return false;
+            }
+        }
 
         for(let col = word1Object.col - 1; col >
         (word1Object.col - charsBeforeOverlap - 1);
@@ -506,19 +489,52 @@ function isRoomForWord(word1Object, word2Object, letter){
             }
         }
     }
-    console.log("there is room");
     return true;
 
 }
 
-function getCrossword(){
-    return crosswordMap;
+function getCrossword() {
+
+    console.log("getting crossword");
+
+    // take crossword and fill each letter with a space
+    for(let i = 0; i < crosswordMap.length; i++){
+        for(let j = 0; j < crosswordMap[i].length; j++){
+            if(crosswordMap[i][j]){
+                crosswordMap[i][j] = " ";
+            }
+        }
     }
+    console.log(crosswordMap);
+    return crosswordMap;
 
+}
 
+function compareCrossword(crossword){
+    if(crosswordMap.length !== crossword.length){
+        return false;
+    }
+    for(let i = 0; i < crosswordMap.length; i++){
+        for(let j = 0; j < crosswordMap[i].length; j++){
+            if(crosswordMap[i][j] !== crossword[i][j]){
+                return false;
+            }
+        }
+    }
+    return true;
+
+}
 
 function resetWordList(){
-    wordleSynonyms = [];
+
+    availableWordList = []
+    overlapTiles = []
+    addedWords = []
+    wordleSynonyms = []
+    crosswordMap = Array.from(({length: rowLength}), ()=> Array(colLength).fill(""));
+
+
+
 }
 
 async function addSynonymsToList(word){
@@ -532,6 +548,7 @@ async function addSynonymsToList(word){
 
     })
     wordleSynonyms.push(word);
+    console.log("wordle syns" + wordleSynonyms);
 
     return availableWordList;
 
@@ -541,5 +558,7 @@ export {
     createCrossword,
     addSynonymsToList,
     resetWordList,
+    setAvailibleWords,
     getCrossword,
+    compareCrossword,
 }

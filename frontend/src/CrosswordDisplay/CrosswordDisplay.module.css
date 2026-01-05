@@ -2,6 +2,9 @@
     display: flex;
     flex-direction: column;
     background-color: white;
+    border: 4px solid #ffffff;
+    width: 50vw;
+    aspect-ratio: 1/1;
 
 }
 .row{
@@ -15,8 +18,7 @@
 .tile{
     color: black;
     border: 1px solid black;
-    width: 2vh;
-    font-weight: bold;
+    width: 5vh;
     aspect-ratio: 1 / 1;
     overflow: hidden;
     text-align: center;
@@ -30,18 +32,21 @@
 
 .tile.display1{
     border: none;
-    background-color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.51);
     border: 1px solid black;
 
 }
 
 .tile.display2{
     border: 1px solid black;
-    background-color: #a6a69c;
+    background-color: #ffffff;
 
 }
 
-.tile.display3{}
+.tile.display3{
+    background-color: rgba(129, 129, 0, 0.39);
+
+}
 
 
 
