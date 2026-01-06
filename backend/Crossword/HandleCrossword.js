@@ -538,8 +538,9 @@ function resetWordList(){
 }
 
 async function addSynonymsToList(word){
+    console.log(word);
     const result = await callGemini(word);
-
+    console.log(result);
     const arr = JSON.parse(result);
     console.log('api says' + result);
     // generate synonyms of word, add word itself

@@ -43,7 +43,7 @@ function Crossword(){
 
     return(<>
 
-            <CrosswordDisplay wordList={crossword} />
+            <CrosswordDisplay wordMap={crossword} />
         </>
     )
 }

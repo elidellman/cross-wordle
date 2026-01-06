@@ -1,4 +1,5 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
+import * as React from "react";
 
 interface TileProps {
     // on wordle val is color 0/1/2
@@ -6,27 +7,31 @@ interface TileProps {
     val?: string;
     text?: string;
     styles: CSSModuleClasses,
+    coordinate: [number, number],
+    clickAction: (coordinate: [number, number]) => void,
 }
 
 
 function CrosswordTile(props: TileProps) {
 
-    const { val = "", text = "", styles} = props;
+    const { val = "", text = "", styles, clickAction, coordinate} = props;
 
-    const [displayType, setDisplayType] = useState(val);
+    const [displayType, setDisplayType] = useState("");
+    const coord = coordinate;
 
-
-
-    const handleClick = (event: React.MouseEvent<HTMLDivElement>) =>{
+    const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         console.log(event.currentTarget);
-        setDisplayType("display3");
+        clickAction(coord)
     }
 
-
+    useEffect(() => {
+        setDisplayType(val);
+    }, [val]);
 
     return(
         <div className={`${styles.tile} ${styles[displayType]}`}
-        onClick={handleClick}>
+        onClick={handleClick}
+        >
             {text}
         </div>
     );
