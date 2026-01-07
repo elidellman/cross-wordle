@@ -2,10 +2,9 @@ import styles from "./CrosswordDisplay.module.css";
 import Tile from "../Tile.tsx";
 import InputBox from "./InputBox.tsx";
 import CrosswordTile from "./crosswordTile.tsx";
-import {useEffect, useState} from "react";
+import {useEffect, useEffectEvent, useState} from "react";
 import * as React from "react";
 import crosswordTile from "./crosswordTile.tsx";
-
 
 
 
@@ -15,11 +14,41 @@ interface CrosswordDisplayProps {
 
 function CrosswordDisplay(props: CrosswordDisplayProps) {
 
+    const keyboardUserInput = (event: KeyboardEvent, setInput: React.Dispatch<React.SetStateAction<string>> ) =>{
+// concat current input with new character
+        // input must be strictly one char
+        console.log(event.key)
+        if(event.key.length === 1){
+            const asciiVal = event.key.charCodeAt(0);
+            // check if a-z
+            if(asciiVal >= 122 || asciiVal >= 97){
+                // word is 5 characters max
+                setInput(i => {
+                    console.log(focusedLength);
+                    if(i.length < focusedLength){
+                        return i + event.key;
+                    }else{
+                        return i;
+                    }
+
+                });
+            }
+        }else{
+            if(event.key === 'Delete'
+                || event.key === 'Backspace'){
+                // if delete/backspace remove last character
+
+                setInput(i => i.substring(0,i.length-1));
+            }
+        }
+
+    }
+
 
 
     const {wordMap} = props;
     const [focused, setFocused] = React.useState<{row: number, col: number, isHorizontal: boolean}>();
-    const [focusedLenghth, setFocusedLenghth] = React.useState<number>(0);
+    const [focusedLength, setFocusedLength] = React.useState<number>(0);
     const [input, setInput] = useState("");
 
 
@@ -52,10 +81,10 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
             if(curTile[1] - 1 < 0){
                 // if end of row is found collides with wall
                 console.log("start of row is" + curTile);
-                setFocusedLenghth(curTile[1])
+                setFocusedLength(curTile[1])
             }else if(wordMap[curTile[0]][curTile[1] - 1] === ''){
                 console.log("start of row is" + curTile);
-                setFocusedLenghth(curTile[1])
+                setFocusedLength(curTile[1])
 
             }
             console.log(curTile);
@@ -63,18 +92,18 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
         }
     }
 
-    const findStartOfCol = (startTile: [number, number])=>{
+    const findStartOfCol = async (startTile: [number, number])=>{
         const curTile: [number, number] = startTile;
         while(wordMap[curTile[0]][curTile[1]]){
 
             if(curTile[0] - 1 < 0){
                 // if end of row is found collides with wall
                 console.log("start of col is" + curTile);
-                setFocusedLenghth(curTile[0])
+                setFocusedLength(curTile[0])
                 break;
             }else if(wordMap[curTile[0]-1][curTile[1]] === ''){
                 console.log("start of col is" + curTile);
-                setFocusedLenghth(curTile[0])
+                setFocusedLength(curTile[0])
                 break;
 
             }else{
@@ -84,19 +113,43 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
         }
     }
 
-
+    const focusOnRow = useEffectEvent( (focus: {row: number, col: number, isHorizontal: boolean} ) =>{
+        if(focus.isHorizontal){
+            findStartOfRow([focus.row, focus.col]);
+        }else{
+            findStartOfCol([focus.row, focus.col]);
+        }
+    })
     // when focused tile changes
     useEffect(() => {
         console.log("clicked");
-        if(focused){
-            /*if(focused.isHorizontal){
-                findStartOfRow([focused.row, focused.col]);
-            }else{
-                findStartOfCol([focused.row, focused.col]);
-            }*/
-
+        if(focused !== undefined){
+            focusOnRow(focused);
         }
     }, [focused]);
+
+    useEffect(()=>{
+        const keyDown = (event: KeyboardEvent) => {
+            // santize userInput
+            if(event.key === 'Return' || event.key === 'Enter'){
+                // call api
+                //setNewLine(true);
+
+            }else{
+                keyboardUserInput(event, setInput);
+            }
+
+        }
+        window.addEventListener("keydown", keyDown);
+        return()=>{
+            window.removeEventListener("keydown", keyDown);
+        }
+    }, []);
+
+
+    useEffect(() => {
+        console.log(input);
+    }, [input]);
 
 
     return (

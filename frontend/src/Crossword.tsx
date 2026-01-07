@@ -12,6 +12,7 @@ function Crossword(){
 
 
 
+
     const location = useLocation();
     const words = location.state.map((arr: {color: number, text: string}[]) => {
         const row = arr.map((item) => item.text).join("");
@@ -37,6 +38,7 @@ function Crossword(){
             result => setCrossword(result),
         );
     }, []);
+
 
 
 
