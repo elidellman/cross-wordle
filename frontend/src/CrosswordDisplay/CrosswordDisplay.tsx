@@ -17,15 +17,14 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
     const keyboardUserInput = (event: KeyboardEvent, setInput: React.Dispatch<React.SetStateAction<string>> ) =>{
 // concat current input with new character
         // input must be strictly one char
-        console.log(event.key)
         if(event.key.length === 1){
             const asciiVal = event.key.charCodeAt(0);
             // check if a-z
             if(asciiVal >= 122 || asciiVal >= 97){
                 // word is 5 characters max
                 setInput(i => {
-                    console.log(focusedLength);
-                    if(i.length < focusedLength){
+                    console.log(focusedLengthRef.current)
+                    if(i.length < focusedLengthRef.current){
                         return i + event.key;
                     }else{
                         return i;
@@ -47,18 +46,37 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
 
 
     const {wordMap} = props;
+    const [displayMap, setDisplayMap] = useState<string[][]>([]);
+
+    useEffect(() => {
+        setDisplayMap(props.wordMap.map(row=>[...row]));
+    }, [props.wordMap]);
+
     const [focused, setFocused] = React.useState<{row: number, col: number, isHorizontal: boolean}>();
     const [focusedLength, setFocusedLength] = React.useState<number>(0);
+    const [focusedStart, setFocusedStart] = React.useState<[number,number]>();
+    const focusedStartRef = React.useRef<[number,number]>([-1,-1]);
+    const focusedLengthRef = React.useRef(0);
+    const inputRef = React.useRef("");
     const [input, setInput] = useState("");
 
 
-
+    useEffect(() => {
+        console.log("length" + focusedLength);
+        focusedLengthRef.current = focusedLength;
+        console.log(focusedLengthRef.current);
+    }, [focusedLength]);
 
 
     const handleClick = (coordinate: [number, number]) =>{
         console.log(coordinate);
-        setFocused((state)=>{return {row: coordinate[0], col: coordinate[1], isHorizontal: (state ? !state.isHorizontal: true) }});
-        //setFocused(event.currentTarget.co)\
+        if(focused){
+            if(focused.row == coordinate[0] || focused?.col == coordinate[1]){
+                setFocused((state)=>{return {row: coordinate[0], col: coordinate[1], isHorizontal: false }});
+            }
+        }
+        setFocused((state)=>{return {row: coordinate[0], col: coordinate[1], isHorizontal: true }});
+
 
     }
 
@@ -71,41 +89,128 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
         return wordMap[rowIndex][colIndex] ? "display1" : "display0";
     }
 
+    const handleInputChange = () => {
+        console.log("input is" + input);
+        // set input to map
+        let inputCount = 0;
+        if(focused){
+            if(focused.isHorizontal){
+                let newRow = []
+                for(let i = 0; i < 20; i++){
+                    if(inputCount < focusedLengthRef.current && i >= focusedStartRef.current[1]){
+                        newRow.push(input[inputCount]);
+                        inputCount++;
+                    }else{
+                        newRow.push(displayMap[focusedStartRef.current[0]][i]);
+                    }
+                }
+                console.log(newRow);
+                setDisplayMap((prevState) =>
+                    prevState.map((row,r)=>{
+                        if(r === focusedStartRef.current[0]){
+                            return newRow;
+                        }else{
+                            return row;
+                        }
+                    })
+
+                );
+
+            }
+            if(!focused.isHorizontal){
+                let newCol = [];
+                for(let i = 0; i < 20; i++){
+                    if(inputCount < focusedLengthRef.current && i >= focusedStartRef.current[0]){
+                        newCol.push(input[inputCount]);
+                        inputCount++;
+                    }else{
+                        newCol.push(displayMap[focusedStartRef.current[0]][i]);
+                    }
+                }
+                console.log(newCol);
+                setDisplayMap(prevState =>
+                    prevState.map((row, r) => {
+                        // only rows that belong to the word
+                        if (
+                            r >= focusedStartRef.current![0] &&
+                            r < focusedStartRef.current![0] + focusedLengthRef.current
+                        ) {
+                            const newRow = [...row];
+                            const col = focusedStartRef.current![1];
+                            const letterIndex = r - focusedStartRef.current![0];
+
+                            newRow[col] = input[letterIndex] ?? row[col];
+                            return newRow;
+                        }
+
+                        return row;
+                    })
+                );
+
+            }
+        }
+
+    }
+
+    useEffect(() => {
+        console.log(displayMap);
+    }, [displayMap]);
+
     const findStartOfRow = (startTile: [number, number])=>{
         console.log(startTile);
         // this is simpler since we only read left-right and up-down
         const curTile: [number, number] = startTile;
+        let firstTile: [number, number];
 
         while(wordMap[curTile[0]][curTile[1]]){
 
-            if(curTile[1] - 1 < 0){
+            if((curTile[1] - 1 < 0 )|| (wordMap[curTile[0]][curTile[1] - 1] === '')){
                 // if end of row is found collides with wall
                 console.log("start of row is" + curTile);
-                setFocusedLength(curTile[1])
-            }else if(wordMap[curTile[0]][curTile[1] - 1] === ''){
-                console.log("start of row is" + curTile);
-                setFocusedLength(curTile[1])
 
+                firstTile = JSON.parse(JSON.stringify(curTile));
+                while(curTile[1] + 1 < 20){
+                    console.log("cur" + curTile);
+                    if(wordMap[curTile[0]][curTile[1] + 1] === ''){
+                        console.log("found white at" + curTile);
+
+                        break;
+                    }
+                    curTile[1]++;
+                }
+                setFocusedLength(curTile[1] - firstTile[1] + 1);
+                setFocusedStart(firstTile);
+                break;
+            }else{
+                curTile[1]--;
             }
             console.log(curTile);
-            curTile[1]--;
         }
     }
 
     const findStartOfCol = async (startTile: [number, number])=>{
         const curTile: [number, number] = startTile;
+        let firstTile: [number, number];
+
         while(wordMap[curTile[0]][curTile[1]]){
 
-            if(curTile[0] - 1 < 0){
+            if((curTile[0] - 1 < 0) || (wordMap[curTile[0]-1][curTile[1]] === '')){
                 // if end of row is found collides with wall
                 console.log("start of col is" + curTile);
-                setFocusedLength(curTile[0])
-                break;
-            }else if(wordMap[curTile[0]-1][curTile[1]] === ''){
-                console.log("start of col is" + curTile);
-                setFocusedLength(curTile[0])
-                break;
+                // need to wrap back untill we find another white tile to find length
+                firstTile = JSON.parse(JSON.stringify(curTile));
+                while(curTile[0] + 1 < 20){
+                    console.log("cur" + curTile);
+                    if(wordMap[curTile[0] + 1][curTile[1]] === ''){
+                        console.log("start of col is" + curTile);
+                        break;
+                    }
+                    curTile[0]++;
+                }
 
+                setFocusedLength(curTile[0] - firstTile[0] + 1);
+                setFocusedStart(firstTile);
+                break;
             }else{
                 curTile[0]--;
             }
@@ -113,7 +218,7 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
         }
     }
 
-    const focusOnRow = useEffectEvent( (focus: {row: number, col: number, isHorizontal: boolean} ) =>{
+    const focusOnLine = useEffectEvent( (focus: {row: number, col: number, isHorizontal: boolean} ) =>{
         if(focus.isHorizontal){
             findStartOfRow([focus.row, focus.col]);
         }else{
@@ -124,9 +229,18 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
     useEffect(() => {
         console.log("clicked");
         if(focused !== undefined){
-            focusOnRow(focused);
+            focusOnLine(focused);
+            setInput("");
+            // put into into row
+
+
         }
     }, [focused]);
+
+    useEffect(() => {
+        focusedStartRef.current = focusedStart;
+    }, [focusedStart]);
+
 
     useEffect(()=>{
         const keyDown = (event: KeyboardEvent) => {
@@ -149,16 +263,19 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
 
     useEffect(() => {
         console.log(input);
+        inputRef.current = input;
+        handleInputChange();
     }, [input]);
+
 
 
     return (
 
         <>
             <div className={styles.card}>
-                {wordMap ?
+                {displayMap ?
 
-                    wordMap.map((val, rowIndex) =>(
+                    displayMap.map((val, rowIndex) =>(
                         // each row
                         <div className={styles.row} key={rowIndex}>
                             {val.map((_,colIndex) =>(
@@ -166,7 +283,7 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
                                     <CrosswordTile styles={styles} val={handleFocusedTile(rowIndex, colIndex)}
                                     coordinate={[rowIndex, colIndex]}
                                     clickAction={handleClick}
-                                    text={wordMap[rowIndex][colIndex]} key={`${rowIndex}-${colIndex}`}
+                                    text={displayMap[rowIndex][colIndex]} key={`${rowIndex}-${colIndex}`}
 
                                     ></CrosswordTile>
                             ))}

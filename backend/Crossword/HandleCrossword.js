@@ -505,7 +505,6 @@ function getCrossword() {
             }
         }
     }
-    console.log(crosswordMap);
     return crosswordMap;
 
 }
