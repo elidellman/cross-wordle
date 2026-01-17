@@ -1,8 +1,14 @@
-import callGemini from "../Gemini/CallGemini.js";
+import {geminiForSynonyms} from "../Gemini/callGemini.js";
+import {geminiForClues} from "../Gemini/callGemini.js";
+
+let cluesDoneLoading = false;
+
 
 let wordleSynonyms = [];
 let availableWordList = [];
 let overlapTiles = []
+
+
 
 const rowLength = 20;
 const colLength = 20;
@@ -44,9 +50,13 @@ function setAvailibleWords(){
 }
 
 function initializeMap(){
+
+
+
     //place first word in middle of grid
-    console.log("INITALIZATION IS CALLED");
-    console.log("wordles are " + availableWordList);
+    overlapTiles = []
+    addedWords = []
+    crosswordMap = Array.from(({length: rowLength}), ()=> Array(colLength).fill(""));
 
 
     // first word will be last word
@@ -155,10 +165,8 @@ function addToMap(overlapObject) {
         const startCol = (overlapObject.word1.col - charsBeforeOverlap);
         const startRow = overlapObject.word1.row + indexInWord1;
 
-        console.log(overlapObject.word1.word);
         for(let col = startCol;
             col < (overlapObject.word1.col + charsAfterOverlap); col++) {
-            console.log("row: " + startRow);
             crosswordMap[startRow][col] = word2[letterCount];
             letterCount++;
         }
@@ -193,11 +201,8 @@ function addToMap(overlapObject) {
 
         const startCol = (overlapObject.word1.col + indexInWord1);
         const startRow = overlapObject.word1.row - charsBeforeOverlap;
-        console.log(overlapObject.word2.word);
         for(let row = startRow;
             row < (overlapObject.word1.row + charsAfterOverlap); row++) {
-            console.log("row: " + row);
-            console.log("placing" + word2[letterCount]);
             crosswordMap[row][startCol] = word2[letterCount];
 
             letterCount++;
@@ -208,7 +213,6 @@ function addToMap(overlapObject) {
         if(index !== -1){
             availableWordList.splice(index, 1);
         }
-        console.log(availableWordList);
 
     }
 
@@ -219,7 +223,6 @@ function addToMap(overlapObject) {
 
 function createCrossword(){
 
-    console.log("Crossword");
     setAvailibleWords();
     initializeMap();
 
@@ -227,7 +230,7 @@ function createCrossword(){
     // after a word is added we check against only current words
     // so it starts against just the starting word
 
-    const genWords = ()=>{
+    const genWords = async ()=>{
         const startSize = addedWords.length;
         for(let i = 0; i < addedWords.length; i++) {
             const word1 = addedWords[i];
@@ -251,15 +254,18 @@ function createCrossword(){
             }
         }
         if(startSize < addedWords.length){
-            genWords();
+            await genWords();
         }else{
             //clear word list to be extra safe
+            await createClues();
 
         }
 
 
     }
-    genWords();
+    genWords().then(() => {
+        console.log("Generated words");
+    });
 
 
 }
@@ -494,9 +500,6 @@ function isRoomForWord(word1Object, word2Object, letter){
 }
 
 function getCrossword() {
-
-    console.log("getting crossword");
-
     // take crossword and fill each letter with a space
     for(let i = 0; i < crosswordMap.length; i++){
         for(let j = 0; j < crosswordMap[i].length; j++){
@@ -537,25 +540,58 @@ function resetWordList(){
 }
 
 async function addSynonymsToList(word){
-    console.log(word);
-    const result = await callGemini(word);
-    console.log(result);
+    const result = await geminiForSynonyms(word);
     const arr = JSON.parse(result);
-    console.log('api says' + result);
     // generate synonyms of word, add word itself
     arr.forEach(element => {
         wordleSynonyms.push(element);
 
     })
     wordleSynonyms.push(word);
-    console.log("wordle syns" + wordleSynonyms);
 
     return availableWordList;
 
 }
 
+///CLUESf
+
+const clueMap = new Map();
+
+async function createClues(){
+    console.log(addedWords);
+    const length = addedWords.length;
+
+    for(let i = 0; i <length; i++){
+        const result = await geminiForClues(addedWords[i]);
+        console.log(result);
+        clueMap.set(JSON.stringify([addedWords[i].row, addedWords[i].col]), result);
+    }
+    cluesDoneLoading = true;
+
+}
+
+function getClue(cords){
+
+    if(cluesDoneLoading){
+        return clueMap.get(JSON.stringify(cords)) ||
+             "Click On A Tile To Get A Clue";
+    }else{
+        return clueMap.get(JSON.stringify(cords)) ||
+            "Clues Are Loading";
+    }
+
+
+
+}
+
+
+
+
+
 export {
     createCrossword,
+    getClue,
+    createClues,
     addSynonymsToList,
     resetWordList,
     setAvailibleWords,

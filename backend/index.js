@@ -5,11 +5,14 @@ import cors from 'cors';
 // get wordle
 
 import {getWordle, isValidWordle} from "./Wordle/HandleWordle.js";
-import callGemini from "./Gemini/CallGemini.js";
+import {geminiForSynonyms} from "./Gemini/callGemini.js";
+
+
 import {
     compareCrossword,
     createCrossword,
     getCrossword,
+    getClue,
     resetWordList,
     setAvailibleWords
 } from "./Crossword/HandleCrossword.js";
@@ -20,7 +23,6 @@ import {addSynonymsToList} from "./Crossword/HandleCrossword.js";
 let currentWordleAnswer = "";
 let crossWordList = [];
 
-
 // get Crossword will be bellow and call another file
 
 const app = express();
@@ -29,13 +31,12 @@ const PORT = 3000;
 function resetValues(){
     currentWordleAnswer = "";
     crossWordList = [];
-    resetWordList();
+    //resetWordList();
 
     getWordle().then(wordle => {
             currentWordleAnswer = wordle.text;
         }
     );
-    console.log(currentWordleAnswer);
 
 }
 
@@ -73,7 +74,6 @@ app.get("/api/reset-vals", (req, res) => {
 
 
 app.get("/api/create-crossword", (req, res) => {
-    console.log("create crossword");
     createCrossword();
 
 })
@@ -81,7 +81,6 @@ app.get("/api/create-crossword", (req, res) => {
 app.get("/api/get-crossword", (req, res) => {
     const result = getCrossword();
     //remove later
-    console.log("result", result);
     if(result.flat().every(e => e === '')){
         createCrossword();
         getCrossword();
@@ -107,16 +106,12 @@ app.post("/api/is-valid-word", (req, res) => {
     isValidWordle(req.body.answer).then(async (result) => {
         // if word is valid, generate synonyms now
         if (result) {
-            console.log(req.body.answer);
-
             // if word is valid generate and store new words
             if(req.body.answer === currentWordleAnswer){
                 await addSynonymsToList(req.body.answer).then((result2) => {
-                    console.log(result2);
                 });
             }else{
                 addSynonymsToList(req.body.answer).then((result2) => {
-                    console.log(result2);
                 });
             }
             // input is word to generate synonyms/related words for
@@ -127,6 +122,13 @@ app.post("/api/is-valid-word", (req, res) => {
         res.send(result);
     });
 
+})
+
+app.post("/api/get-clue", (req, res) => {
+    const cords = req.body.text;
+    const result = getClue(cords);
+    console.log(result);
+    res.json(result ? result : null);
 })
 
 app.get('/api/get-wordle', (req, res) => {

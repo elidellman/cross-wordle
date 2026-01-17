@@ -199,6 +199,8 @@ function Home() {
     useEffect(() => {
         if(wordleComplete){
             createArray();
+            // switching to crossword
+            console.log("switching to cross")
             navigate(`/crossword/`, {
                 replace: false,
                 state: submittedRows,
