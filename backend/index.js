@@ -116,23 +116,28 @@ app.post("/", (req, res) => {
     res.send("POST Request Called");
 })
 
-app.post("/api/is-valid-word", async (req, res) => {
-    try {
-        const answer = req.body.answer;
-
-        const result = await isValidWordle(answer);
-
+app.post("/api/is-valid-word", (req, res) => {
+    console.log("hello bros");
+    isValidWordle(req.body.answer).then(async (result) => {
+        // if word is valid, generate synonyms now
         if (result) {
-            await addSynonymsToList(answer);
+            // if word is valid generate and store new words
+            if(req.body.answer === currentWordleAnswer){
+                await addSynonymsToList(req.body.answer).then((result2) => {
+                });
+            }else{
+                addSynonymsToList(req.body.answer).then((result2) => {
+                });
+            }
+            // input is word to generate synonyms/related words for
+
+        } else {
+            // dont do anything since word is garbage
         }
+        res.send(result);
+    });
 
-        res.json({ valid: result });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Server error" });
-    }
-});
+})
 
 app.post("/api/get-clue", (req, res) => {
     const cords = req.body.text;
