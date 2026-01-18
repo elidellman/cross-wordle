@@ -108,6 +108,7 @@ app.post("/api/is-valid-word", (req, res) => {
         if (result) {
             // if word is valid generate and store new words
             if(req.body.answer === currentWordleAnswer){
+                res.send(result);
                 await addSynonymsToList(req.body.answer).then((result2) => {
                 });
             }else{

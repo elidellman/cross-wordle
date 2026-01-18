@@ -1,10 +1,7 @@
 import styles from "./CrosswordDisplay.module.css";
-import Tile from "../Tile.tsx";
-import InputBox from "./InputBox.tsx";
 import CrosswordTile from "./crosswordTile.tsx";
-import {use, useEffect, useEffectEvent, useState} from "react";
+import {useEffect, useEffectEvent, useState} from "react";
 import * as React from "react";
-import crosswordTile from "./crosswordTile.tsx";
 import ClueBox from "./ClueBox.tsx";
 
 
@@ -15,7 +12,7 @@ interface CrosswordDisplayProps {
 
 function CrosswordDisplay(props: CrosswordDisplayProps) {
 
-    const keyboardUserInput = (event: KeyboardEvent,  f: React.Dispatch<React.SetStateAction<string>> ) =>{
+    const keyboardUserInput = (event: KeyboardEvent) =>{
 // concat current input with new character
         // input must be strictly one char
         if(event.key.length === 1){
@@ -50,8 +47,6 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
         }
 
     }
-
-
     const {wordMap} = props;
     const [displayMap, setDisplayMap] = useState<string[][]>([]);
 
@@ -62,7 +57,6 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
     const [focused, setFocused] = React.useState<{row: number, col: number, isHorizontal: boolean}>();
     const [focusedLength, setFocusedLength] = React.useState<number>(0);
 
-    const [lastFocusedStart, setlastFocusedStart] = React.useState<[number,number]>([-1,-1]);
     const lastFocusedStartRef = React.useRef<[number,number]>([-1,-1]);
 
     const [focusedStart, setFocusedStart] = React.useState<[number,number]>([-1,-1]);
@@ -84,11 +78,11 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
                 // double clicked
                 setFocused((state)=>{return {row: coordinate[0], col: coordinate[1], isHorizontal: !state?.isHorizontal }});
             }else{
-                setFocused((state)=>{return {row: coordinate[0], col: coordinate[1], isHorizontal: true }});
+                setFocused({row: coordinate[0], col: coordinate[1], isHorizontal: true });
 
             }
         }else{
-            setFocused((state)=>{return {row: coordinate[0], col: coordinate[1], isHorizontal: true }});
+            setFocused({row: coordinate[0], col: coordinate[1], isHorizontal: true });
 
         }
 
@@ -105,8 +99,6 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
     }
 
     const handleInputChange = () => {
-        let curWord = input;
-
         // set input to map
         // if map alraedy has something where focus is set that to input
         let inputCount = 0;
@@ -156,7 +148,7 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
 
             }
             else if(!focused.isHorizontal){
-                let newCol = [];
+                const newCol = [];
 
                 for(let i = 0; i < 20; i++){
                     if(inputCount < focusedLengthRef.current && i >= focusedStartRef.current[0]){
@@ -208,7 +200,6 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
             if((curTile[1] - 1 < 0 )|| (wordMap[curTile[0]][curTile[1] - 1] === '')){
                 // if end of row is found collides with wall
                 firstTile = JSON.parse(JSON.stringify(curTile));
-                let curInput = displayMap[firstTile[0]][firstTile[1]];
                 while(curTile[1] + 1 < 20){
 
                     if(wordMap[curTile[0]][curTile[1] + 1] === ''){
@@ -267,10 +258,6 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
     // when focused tile changes
     useEffect(() => {
         if(focused !== undefined){
-
-
-            if(lastFocusedStartRef.current == focusedStartRef.current){
-            }
             focusOnLine(focused);
 
             // put into into row
@@ -297,7 +284,7 @@ function CrosswordDisplay(props: CrosswordDisplayProps) {
                 //setNewLine(true);
 
             }else{
-                keyboardUserInput(event, setInput);
+                keyboardUserInput(event);
             }
 
         }

@@ -82,8 +82,6 @@ function Home() {
 
 
 
-    const [message, setMessage] = useState({});
-    const [checkResult, setCheckResult] = useState<{answer: number}[]>([])
     const [wordleComplete, setWordleComplete] = useState(false);
 
     const [submittedRows, setSubmittedRows] = useState<{color: number, text: string}[][]>([]);
@@ -173,9 +171,6 @@ function Home() {
     })();
     console.log(displayArray);
 
-    useEffect(() => {
-
-    }, [checkResult]);
 
     const navigate = useNavigate();
 
