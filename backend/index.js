@@ -2,6 +2,9 @@
 import express from 'express';
 import cors from 'cors';
 import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //const base_url = process.env.ENV_URL || "http://localhost:3000";
 
@@ -47,6 +50,10 @@ function resetValues(){
 
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "dist")));
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
 
 app.use(cors(
     {
@@ -104,7 +111,7 @@ app.get("api/compare-crossword", (req, res) => {
 })
 
 app.get('/', (req, res) => {
-    res.send("Hello, this is the not so private NODE JS Cross-Wordle API");
+
 })
 
 app.post("/", (req, res) => {
