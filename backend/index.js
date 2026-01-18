@@ -10,7 +10,6 @@ import path from "path";
 // get wordle
 
 import {getWordle, isValidWordle} from "./wordle/HandleWordle.js";
-import {geminiForSynonyms} from "./Gemini/callGemini.js";
 
 
 import {
