@@ -53,15 +53,20 @@ app.use(cors(
         origin: (origin, callback) => {
             if(process.env.NODE_ENV !== 'production') {
                 callback(null, true);
-            }else{
-                if(process.env.NODE_ENV === 'production') {
-                    if(origin === 'https://urlapp.com'){
-                        callback(null, true);
-                    }else{
-                        callback(new Error('Not Allowed'));
-                    }
-                }
             }
+
+            // allow same origin
+            if(!origin){
+                return callback(null, true);
+            }
+
+            if(origin === 'https://cross-wordle.onrender.com'){
+                callback(null, true);
+            }
+            callback(new Error('Not Allowed'));
+
+
+
         }
     }
 ));
