@@ -1,9 +1,11 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 async function callApi(
     url: string,
     options?: RequestInit
 ){
     try{
-        const response = await fetch(url, options);
+        const response = await fetch(`${API_URL}${url}`, options);
         if(!response.ok){
             console.log("HTTP error" + response.statusText);
         }

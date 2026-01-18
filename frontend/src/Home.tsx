@@ -40,7 +40,7 @@ function Home() {
 
 
     const submitRow = async () =>{
-        const result = await callApi("http://localhost:3000/api/check-wordle", {
+        const result = await callApi("api/check-wordle", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -132,7 +132,7 @@ function Home() {
     useEffect(() => {
         if(newLine){
             // turn this off for debug
-            callApi("http://localhost:3000/api/is-valid-word", {
+            callApi("/api/is-valid-word", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -175,7 +175,7 @@ function Home() {
     const navigate = useNavigate();
 
     const resetVals = async () => {
-        const result = await callApi("http://localhost:3000/api/reset-vals");
+        const result = await callApi("/api/reset-vals");
         return result;
     }
 
@@ -186,7 +186,7 @@ function Home() {
     }, []);
 
     const createArray = async () =>{
-        const result = await callApi("http://localhost:3000/api/create-crossword");
+        const result = await callApi("/api/create-crossword");
         return result;
     }
 

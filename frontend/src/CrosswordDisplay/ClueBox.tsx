@@ -18,7 +18,7 @@ function ClueBox(props: ClueBoxProps) {
 
     //on mount
     useEffect(() => {
-            callApi(`http://localhost:3000/api/get-clue`, {
+            callApi(`/api/get-clue`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

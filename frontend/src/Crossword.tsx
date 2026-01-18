@@ -19,7 +19,7 @@ function Crossword(){
     const [crossword, setCrossword] = useState([]);
 
     const displayArray = async () =>{
-        return await callApi("http://localhost:3000/api/get-crossword");
+        return await callApi("/api/get-crossword");
 
     }
 

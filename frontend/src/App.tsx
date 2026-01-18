@@ -17,7 +17,7 @@ function App() {
     // reset everything on server to default values
     useEffect(() => {
         console.log("App mounted");
-        callApi("http://localhost:3000/api/reset-vals").then((result)=>{
+        callApi("/api/reset-vals").then((result)=>{
             console.log("Reset Status: " + result);
         });
     }, []);

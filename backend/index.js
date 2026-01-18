@@ -1,6 +1,11 @@
 
 import express from 'express';
 import cors from 'cors';
+import path from "path";
+
+//const base_url = process.env.ENV_URL || "http://localhost:3000";
+
+
 
 // get wordle
 
@@ -26,7 +31,7 @@ let crossWordList = [];
 // get Crossword will be bellow and call another file
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 function resetValues(){
     currentWordleAnswer = "";
@@ -171,6 +176,12 @@ app.post('/api/check-wordle', (req, res) => {
     });
     res.send(row);
 })
+
+app.use(express.static(path.join(__dirname, 'dist')));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
 
 
 app.listen(PORT, () => {
