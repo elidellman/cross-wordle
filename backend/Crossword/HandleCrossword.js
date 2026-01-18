@@ -1,5 +1,5 @@
-import {geminiForSynonyms} from "../Gemini/callGemini.js"
-import {geminiForClues} from "../Gemini/callGemini.js"
+import {geminiForSynonyms} from "../Gemini/CallGemini.js"
+import {geminiForClues} from "../Gemini/CallGemini.js"
 
 let cluesDoneLoading = false;
 
