@@ -179,7 +179,7 @@ function Home() {
         return result;
     }
 
-    // on mount reset wordle and crossword list
+    // on mount reset Wordle and crossword list
     useEffect(() => {
         console.log("pageload");
         resetVals();

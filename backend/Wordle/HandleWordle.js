@@ -20,7 +20,7 @@ function loadFile(filename) {
 
 async function getWordle(){
 
-    const wordList = await loadFile('./wordle/valid-wordle-words.txt');
+    const wordList = await loadFile('./Wordle/valid-Wordle-words.txt');
     let randomNum = (Math.round(Math.random() * (wordList.length)));
 
     return {
@@ -30,7 +30,7 @@ async function getWordle(){
 }
 
 async function isValidWordle(word){
-    const wordList = await loadFile('./wordle/valid-wordle-words.txt');
+    const wordList = await loadFile('./Wordle/valid-Wordle-words.txt');
     for(let entry of wordList){
 
         if(entry === word){

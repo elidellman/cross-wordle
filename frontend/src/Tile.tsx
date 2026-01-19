@@ -1,6 +1,6 @@
 
 interface TileProps {
-    // on wordle val is color 0/1/2
+    // on Wordle val is color 0/1/2
     // on crossword val is if it has text or not 0/1
     val?: number;
     text?: string;

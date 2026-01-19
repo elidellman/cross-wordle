@@ -10,10 +10,12 @@ const __dirname = path.dirname(__filename);
 
 
 
-// get wordle
+// get Wordle
 
-import {getWordle, isValidWordle} from "./wordle/HandleWordle.js";
-
+import {getWordle, isValidWordle} from "./Wordle/HandleWordle.js";
+isValidWordle("hello").then(result=>{
+    console.log(result);
+});
 
 import {
     compareCrossword,

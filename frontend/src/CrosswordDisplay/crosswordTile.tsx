@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import * as React from "react";
 
 interface TileProps {
-    // on wordle val is color 0/1/2
+    // on Wordle val is color 0/1/2
     // on crossword val is if it has text or not 0/1
     val?: string;
     text?: string;
