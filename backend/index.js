@@ -118,28 +118,24 @@ app.post("/", (req, res) => {
     res.send("POST Request Called");
 })
 
-app.post("/api/is-valid-word", (req, res) => {
-    console.log("hello bros");
-    console.log(req.body.answer);
-    isValidWordle(req.body.answer).then(async (result) => {
-        // if word is valid, generate synonyms now
-        console.log(result);
-        if (result) {
-            // if word is valid generate and store new words
-            if(req.body.answer === currentWordleAnswer){
-                await addSynonymsToList(req.body.answer).then((result2) => {
-                });
-            }else{
-                addSynonymsToList(req.body.answer).then((result2) => {
-                });
-            }
-            // input is word to generate synonyms/related words for
+app.post("/api/is-valid-word", async (req, res) => {
 
-        } else {
-            // dont do anything since word is garbage
+    const result = await isValidWordle(req.body.text);
+
+    if (result) {
+        // if word is valid generate and store new words
+        if(req.body.answer === currentWordleAnswer){
+            await addSynonymsToList(req.body.answer).then((result2) => {
+            });
+        }else{
+            addSynonymsToList(req.body.answer).then((result2) => {
+            });
         }
+        // input is word to generate synonyms/related words for
+
+    }
+
         return res.send(result);
-    });
 
 })
 
