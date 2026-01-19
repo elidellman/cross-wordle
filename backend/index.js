@@ -121,6 +121,7 @@ app.post("/api/is-valid-word", (req, res) => {
     console.log(req.body.answer);
     isValidWordle(req.body.answer).then(async (result) => {
         // if word is valid, generate synonyms now
+        console.log(result);
         if (result) {
             // if word is valid generate and store new words
             if(req.body.answer === currentWordleAnswer){
