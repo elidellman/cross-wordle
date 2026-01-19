@@ -10,8 +10,11 @@ function loadFile(filename) {
             if(err){
                 reject(err);
             }
-            const text = data.trim().split('\n');
-            resolve(text);
+            if(data){
+                const text = data.trim().split('\n');
+                resolve(text);
+            }
+
 
 
         });
