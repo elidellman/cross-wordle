@@ -118,6 +118,7 @@ app.post("/", (req, res) => {
 
 app.post("/api/is-valid-word", (req, res) => {
     console.log("hello bros");
+    console.log(req.body.answer);
     isValidWordle(req.body.answer).then(async (result) => {
         // if word is valid, generate synonyms now
         if (result) {
