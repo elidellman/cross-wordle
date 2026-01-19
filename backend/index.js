@@ -138,7 +138,7 @@ app.post("/api/is-valid-word", (req, res) => {
         } else {
             // dont do anything since word is garbage
         }
-        res.send(result);
+        return res.send(result);
     });
 
 })
