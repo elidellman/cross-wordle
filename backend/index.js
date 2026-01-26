@@ -122,20 +122,21 @@ app.post("/api/is-valid-word", async (req, res) => {
 
     const result = await isValidWordle(req.body.text);
     console.log(result);
-    if (result) {
-        // if word is valid generate and store new words
-        if(req.body.answer === currentWordleAnswer){
-            await addSynonymsToList(req.body.answer).then((result2) => {
-            });
-        }else{
-            addSynonymsToList(req.body.answer).then((result2) => {
-            });
-        }
-        // input is word to generate synonyms/related words for
-
-    }
-
-    res.send(result);
+    res.send(false);
+    // if (result) {
+    //     // if word is valid generate and store new words
+    //     if(req.body.answer === currentWordleAnswer){
+    //         await addSynonymsToList(req.body.answer).then((result2) => {
+    //         });
+    //     }else{
+    //         addSynonymsToList(req.body.answer).then((result2) => {
+    //         });
+    //     }
+    //     // input is word to generate synonyms/related words for
+    //
+    // }
+    //
+    // res.send(result);
 })
 
 app.post("/api/get-clue", (req, res) => {
