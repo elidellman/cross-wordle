@@ -72,7 +72,7 @@ app.use(cors(
             if(origin === 'https://cross-wordle.onrender.com'){
                 callback(null, true);
             }
-            callback(new Error('Not Allowed'));
+            return callback(null, false);
 
 
 
@@ -118,25 +118,26 @@ app.post("/", (req, res) => {
     res.send("POST Request Called");
 })
 
-app.post("/api/is-valid-word", async (req, res) => {
+app.post("/api/is-valid-word", (req, res) => {
 
-    const result = await isValidWordle(req.body.text);
-    console.log(result);
-    res.send(false);
-    // if (result) {
-    //     // if word is valid generate and store new words
-    //     if(req.body.answer === currentWordleAnswer){
-    //         await addSynonymsToList(req.body.answer).then((result2) => {
-    //         });
-    //     }else{
-    //         addSynonymsToList(req.body.answer).then((result2) => {
-    //         });
-    //     }
-    //     // input is word to generate synonyms/related words for
+    res.send("");
+    // /*//const result = await isValidWordle(req.body.text);
+    // //console.log(result);
     //
-    // }
-    //
-    // res.send(result);
+    // // if (result) {
+    // //     // if word is valid generate and store new words
+    // //     if(req.body.answer === currentWordleAnswer){
+    // //         await addSynonymsToList(req.body.answer).then((result2) => {
+    // //         });
+    // //     }else{
+    // //         addSynonymsToList(req.body.answer).then((result2) => {
+    // //         });
+    // //     }
+    // //     // input is word to generate synonyms/related words for
+    // //
+    // // }
+    // //
+    // // res.send(result);*/
 })
 
 app.post("/api/get-clue", (req, res) => {
