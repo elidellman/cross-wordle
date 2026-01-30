@@ -40,7 +40,7 @@ function Home() {
 
 
     const submitRow = async () =>{
-        const result = await callApi("api/check-wordle", {
+        const result = await callApi("/api/check-wordle", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
