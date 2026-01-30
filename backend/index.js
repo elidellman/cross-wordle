@@ -80,6 +80,12 @@ app.use(cors(
 app.get("/api/reset-vals", (req, res) => {
     try {
         resetValues();
+        getWordle().then(wordle => {
+                currentWordleAnswer = wordle.text;
+                res.json(wordle);
+            }
+        );
+
         res.json("OK");
     } catch(err) {
         res.json("ERROR");
