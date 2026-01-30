@@ -119,7 +119,7 @@ app.post("/", (req, res) => {
 
 app.post("/api/is-valid-word", async (req, res) => {
 
-    const result = await isValidWordle(req.body.text);
+    const result = await isValidWordle(req.body.text.answer);
 
     if (result) {
         // if word is valid generate and store new words
@@ -134,7 +134,7 @@ app.post("/api/is-valid-word", async (req, res) => {
 
     }
 
-    res.send(result);
+    return res.send(result);
 })
 
 app.post("/api/get-clue", (req, res) => {
