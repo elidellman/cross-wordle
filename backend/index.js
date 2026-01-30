@@ -119,7 +119,7 @@ app.post("/api/is-valid-word", async (req, res) => {
 
     console.log(req.body);
 
-    const result = await isValidWordle(req.body.text);
+    const result = await isValidWordle(req.body.answer);
 
     if (result) {
         // if word is valid generate and store new words
