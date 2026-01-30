@@ -60,19 +60,18 @@ app.get("/", (req, res) => {
 app.use(cors(
     {
         origin: (origin, callback) => {
-            if(process.env.NODE_ENV !== 'production') {
+            /*if(process.env.NODE_ENV !== 'production') {
                 callback(null, true);
-            }
+            }*/
 
             // allow same origin
-            if(!origin){
+            /*if(!origin){
                 return callback(null, true);
-            }
+            }*/
 
             if(origin === 'https://cross-wordle.onrender.com'){
                 callback(null, true);
             }
-            return callback(null, false);
 
 
 
