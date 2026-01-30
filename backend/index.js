@@ -82,9 +82,9 @@ app.get("/api/reset-vals", (req, res) => {
         resetValues();
         getWordle().then(wordle => {
                 currentWordleAnswer = wordle.text;
-                res.json(wordle);
             }
         );
+        console.log("answer is" + currentWordleAnswer);
 
         res.json("OK");
     } catch(err) {
