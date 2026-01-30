@@ -60,14 +60,12 @@ app.get("/", (req, res) => {
 app.use(cors(
     {
         origin: (origin, callback) => {
-            /*if(process.env.NODE_ENV !== 'production') {
+            if(process.env.NODE_ENV !== 'production') {
                 callback(null, true);
-            }*/
+            }
 
             // allow same origin
-            /*if(!origin){
-                return callback(null, true);
-            }*/
+
 
             if(origin === 'https://cross-wordle.onrender.com'){
                 callback(null, true);
@@ -119,7 +117,9 @@ app.post("/", (req, res) => {
 
 app.post("/api/is-valid-word", async (req, res) => {
 
-    const result = await isValidWordle(req.body.text.answer);
+    console.log(req.body);
+
+    const result = await isValidWordle(req.body.text);
 
     if (result) {
         // if word is valid generate and store new words
@@ -134,7 +134,7 @@ app.post("/api/is-valid-word", async (req, res) => {
 
     }
 
-    return res.send(result);
+    res.send(result);
 })
 
 app.post("/api/get-clue", (req, res) => {
